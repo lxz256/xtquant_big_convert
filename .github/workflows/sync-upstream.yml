@@ -1,0 +1,21 @@
+name: Sync Upstream
+on:
+  schedule:
+    # 每天北京时间上午 8:00 (UTC 0:00) 自动运行
+    - cron: '0 0 * * *'
+  # 支持在 GitHub 网页上手动点击立即同步
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+      - name: Sync upstream
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 自动同步当前仓库的默认分支（通常是 main 或 master）
+          gh repo sync ${{ github.repository }} -b ${{ github.event.repository.default_branch || 'main' }}
